@@ -11,6 +11,7 @@ from io import BytesIO
 from typing import Union, List, Dict, Optional, Any, Tuple
 from tenacity import retry, stop_after_attempt, wait_random
 from openai import OpenAI, AzureOpenAI
+from google import genai
 
 from label_studio_ml.model import LabelStudioMLBase
 from label_studio_ml.response import ModelResponse
@@ -47,6 +48,12 @@ def chat_completion_call(messages, params, *args, **kwargs):
         )
         if not model:
             model = 'gpt-3.5-turbo'
+    if provider == "gemini":
+        client = genai.Client(
+            api_key='GEMINI_API_KEY',
+        )
+        if not model:
+            model = 'gemini-3.5-flash-lite'
     elif provider == "azure":
         client = AzureOpenAI(
             api_key=params.get("api_key", OpenAIInteractive.OPENAI_KEY),
