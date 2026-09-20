@@ -23,7 +23,8 @@ image: "/guide/ml_tutorials/llm-interactive.png"
 
 This example server connects Label Studio to [OpenAI](https://platform.openai.com/), [Ollama](https://ollama.com/),
 or [Azure](https://azure.microsoft.com/en-us/products/ai-services/openai-service) API to interact with GPT chat models (
-gpt-3.5-turbo, gpt-4, etc.).
+gpt-3.5-turbo, gpt-4, etc.).<br>
+Note: Gemini added
 
 The interactive flow allows you to perform the following scenarios:
 
