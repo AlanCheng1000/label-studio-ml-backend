@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   llm_interactive:
     container_name: llm_interactive
@@ -8,7 +6,7 @@ services:
     build:
       context: .
       args:
-        TEST_ENV: ${TEST_ENV}
+        TEST_ENV: ${TEST_ENV:-false}
     environment:
       - MODEL_DIR=/data/models
       # Specify openai model provider: "openai", "azure", or "ollama" (or "gemini")
