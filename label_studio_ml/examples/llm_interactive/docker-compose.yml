@@ -11,12 +11,12 @@ services:
         TEST_ENV: ${TEST_ENV}
     environment:
       - MODEL_DIR=/data/models
-      # Specify openai model provider: "openai", "azure", or "ollama"
-      - OPENAI_PROVIDER=openai
-      # Specify API key for openai or azure
+      # Specify openai model provider: "openai", "azure", or "ollama" (or "gemini")
+      - OPENAI_PROVIDER=gemini
+      # Specify API key for openai or azure (or gemini)
       - OPENAI_API_KEY=
       # Specify model name for openai or azure (by default it uses "gpt-3.5-turbo")
-      - OPENAI_MODEL=gpt-3.5-turbo
+      - OPENAI_MODEL=gemini-3.5-flash-lite
       # Internal prompt template for the model is:
       # **Source Text**:\n\n"{text}"\n\n**Task Directive**:\n\n"{prompt}"
       # if you want to specify task data keys in the prompt (i.e. input <TextArea name="$PROMPT_PREFIX..."/>, set this to 0
