@@ -72,6 +72,16 @@ def chat_completion_call(messages, params, *args, **kwargs):
     else:
         raise
 
+    # for Gemini api
+    if provider == "gemini":
+        # Convert message structure or pass prompt to generate_content
+        prompt_text = "\n".join([m['content'] for m in messages if 'content' in m])
+        response = client.models.generate_content(
+            model=model,
+            contents=prompt_text,
+        )
+        return response.text
+
     request_params = {
         "messages": messages,
         "model": model,
@@ -92,8 +102,15 @@ def gpt(messages: Union[List[Dict], str], params, *args, **kwargs):
 
     logger.debug(f"OpenAI request: {messages}, params={params}")
     completion = chat_completion_call(messages, params)
-    logger.debug(f"OpenAI response: {completion}")
-    response = [choice.message.content for choice in completion.choices]
+
+    # for gemini
+    provider = params.get("provider", OpenAIInteractive.OPENAI_PROVIDER)
+    if provider == "gemini":
+        logger.debug(f"Gemini response: {completion}")
+        response = [completion]
+    else:
+        logger.debug(f"OpenAI response: {completion}")
+        response = [choice.message.content for choice in completion.choices]
 
     return response
 
