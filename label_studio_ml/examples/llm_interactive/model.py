@@ -50,7 +50,7 @@ def chat_completion_call(messages, params, *args, **kwargs):
             model = 'gpt-3.5-turbo'
     if provider == "gemini":
         client = genai.Client(
-            api_key='GEMINI_API_KEY',
+            api_key=params.get("api_key", os.getenv("GEMINI_API_KEY")),
         )
         if not model:
             model = 'gemini-3.5-flash-lite'
