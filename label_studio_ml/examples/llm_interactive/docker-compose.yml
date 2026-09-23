@@ -13,6 +13,7 @@ services:
       - OPENAI_PROVIDER=gemini
       # Specify API key for openai or azure (or gemini)
       - OPENAI_API_KEY=
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       # Specify model name for openai or azure (by default it uses "gpt-3.5-turbo")
       - OPENAI_MODEL=gemini-3.5-flash-lite
       # Internal prompt template for the model is:
