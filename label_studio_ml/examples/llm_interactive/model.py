@@ -237,16 +237,24 @@ class OpenAIInteractive(LabelStudioMLBase):
     def _find_prompt_tags(self) -> Tuple[ControlTag, ObjectTag]:
         """Find prompting tags in the config
         """
-        li = self.label_interface
-        prompt_from_name, prompt_to_name, value = li.get_first_tag_occurence(
-            # prompt tag
-            self.PROMPT_TAG,
-            # supported input types
-            self.SUPPORTED_INPUTS,
-            # if multiple <TextArea> are presented, use one with prefix specified in PROMPT_PREFIX
-            name_filter=lambda s: s.startswith(self.PROMPT_PREFIX))
-
-        return li.get_control(prompt_from_name), li.get_object(prompt_to_name)
+        try:
+            li = self.label_interface
+            prompt_from_name, prompt_to_name, value = li.get_first_tag_occurence(
+                # prompt tag
+                self.PROMPT_TAG,
+                # supported input types
+                self.SUPPORTED_INPUTS,
+                # if multiple <TextArea> are presented, use one with prefix specified in PROMPT_PREFIX
+                name_filter=lambda s: s.startswith(self.PROMPT_PREFIX))
+            
+            return li.get_control(prompt_from_name), li.get_object(prompt_to_name)
+        except Exception:
+            object_tag = li.get_objects_by_type(ImageTag, ParagraphsTag)[0] if hasattr(li, 'get_objects_by_type') else None
+            if not object_tag:
+                # Get the first object tag connected to control tags
+                for name, tag in li.objects.items():
+                    return None, tag
+            return None, object_tag
 
     def _validate_tags(self, choices_tag: str, textarea_tag: str) -> None:
         if not choices_tag and not textarea_tag:
