@@ -23,7 +23,7 @@ services:
       # You can define the default prompt to be used before the user input
       # Can be the path to the file with the prompt or the prompt itself
       # ! Note that USE_INTERNAL_PROMPT_TEMPLATE should be set to 0 in this case
-      - DEFAULT_PROMPT="Extract entities from the text based on the provided labels. Return the result in a JSON string array (e.g. [{\"text\": \"胃潰瘍\", \"label\": \"DISEASE\"}])."
+      - 'DEFAULT_PROMPT="Extract entities from the text based on the provided labels. Return the result in a JSON string array (e.g. [{\"text\": \"胃潰瘍\", \"label\": \"DISEASE\"}])."'
       # Prompt prefix for the TextArea component in the frontend to be used for the user input
       - PROMPT_PREFIX=prompt
       # Log level for the server
