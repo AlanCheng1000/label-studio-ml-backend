@@ -256,9 +256,22 @@ class OpenAIInteractive(LabelStudioMLBase):
                     return None, tag
             return None, object_tag
 
-    def _validate_tags(self, choices_tag: str, textarea_tag: str) -> None:
-        if not choices_tag and not textarea_tag:
-            raise ValueError('No supported tags found: <Choices> or <TextArea>')
+    def _find_labels_tag(self, object_tag):
+        """NER predictor helper"""
+        li = self.label_interface
+        try:
+            labels_from_name, _, _ = li.get_first_tag_occurence(
+                'Labels',
+                self.SUPPORTED_INPUTS,
+                to_name_filter=lambda s: s == object_tag.name,
+            )
+            return li.get_control(labels_from_name)
+        except:
+            return None
+
+    def _validate_tags(self, choices_tag: str, textarea_tag: str, labels_tag: str=None) -> None:
+        if not choices_tag and not textarea_tag and not labels_tag:
+            raise ValueError('No supported tags found: <Choices>, <Labels>, or <TextArea>')
 
     def _generate_normalized_prompt(self, text: str, prompt: str, task_data: Dict, labels: Optional[List[str]]) -> str:
         """
@@ -271,10 +284,32 @@ class OpenAIInteractive(LabelStudioMLBase):
         return norm_prompt
 
     def _generate_response_regions(self, response: List[str], prompt_tag,
-                                   choices_tag: ControlTag, textarea_tag: ControlTag, prompts: List[str]) -> List:
+                                   choices_tag: ControlTag, textarea_tag: ControlTag, labels_tag: ControlTag, prompts: List[str]) -> List:
         """
         """
         regions = []
+
+        if labels_tag and len(response) > 0:
+            try:
+                # Expecting LLM to return JSON string array: [{"text": "...", "label": "..."}]
+                extracted_entities = json.loads(response[0])
+                for ent in extracted_entities:
+                    ent_text = ent.get("text")
+                    label = ent.get("label")
+                    
+                    # Find character offsets in the original text
+                    start = text_content.find(ent_text)
+                    if start != -1:
+                        end = start + len(ent_text)
+                        region = labels_tag.label({
+                            'start': start,
+                            'end': end,
+                            'text': ent_text,
+                            'labels': [label]
+                        })
+                        regions.append(region)
+            except Exception as e:
+                logger.error(f"Failed to parse NER response: {e}")
 
         if choices_tag and len(response) > 0:
             matched_labels = self._match_choices(response, choices_tag.labels)
@@ -319,7 +354,8 @@ class OpenAIInteractive(LabelStudioMLBase):
 
             choices_tag = self._find_choices_tag(object_tag)
             textarea_tag = self._find_textarea_tag(prompt_tag, object_tag)
-            self._validate_tags(choices_tag, textarea_tag)
+            labels_tag = self._find_labels_tag(object_tag)
+            self._validate_tags(choices_tag, textarea_tag, labels_tag)
 
             for task in tasks:
                 # preload all task data fields, they are needed for prompt
