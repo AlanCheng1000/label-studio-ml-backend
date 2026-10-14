@@ -94,7 +94,7 @@
 服法、用法、給藥頻率或療程安排。
 例：一日量、分三次服、服七帖、吞服、長期服用。
 
-## Example format from human demonstration (contains input and annotation output)
+## 格式範例 (僅參考輸入輸出格式，標註內容不完整)
 
 {
   "id": 1,
